@@ -196,6 +196,7 @@ VALUES (11, 1, '2024-04-01', '2024-04-05', 1);
 
 SELECT * FROM Rooms_booked WHERE room_booked_ID = 11;
 
+DROP TRIGGER update_nights; 
 
 -- TASK 6: In your DB create an event and demonstrate how it runs. 
 -- In this example, the event HourlyRoomBookingUpdate is scheduled to run every hour, 
@@ -218,7 +219,7 @@ DO
   SHOW EVENTS WHERE Db = 'Summer_house_rental' AND Name = 'HourlyRoomBookingUpdate';
   
   -- TASK 7: create a view that uses at least 3-4 base tables; 
-  -- prepare and demonstate aquery that uses the view to produce a logically arranged result set for analysis
+  -- prepare and demonstate a query that uses the view to produce a logically arranged result set for analysis
   
   CREATE VIEW SummerHouseRentalsView AS
 SELECT
@@ -237,11 +238,20 @@ JOIN
     Rooms r ON rb.room_ID = r.room_ID;
     
   --  retrieve all booked rooms along with customer names
-SELECT CustomerFirstName, CustomerLastName, RoomType, CheckInDate, CheckOutDate
+SELECT 
+CustomerFirstName, 
+CustomerLastName, 
+RoomType, 
+CheckInDate, 
+CheckOutDate
 FROM SummerHouseRentalsView;
 
 -- find the total cost for each booking:
-SELECT CustomerFirstName, CustomerLastName, RoomType, NightsBooked * RoomRate AS TotalCost
+SELECT 
+CustomerFirstName, 
+CustomerLastName, 
+RoomType, 
+NightsBooked * RoomRate AS TotalCost
 FROM SummerHouseRentalsView;
 
   -- TASK 8: prepare an example query with group by and having to demonstrate how to extract data for analysis
