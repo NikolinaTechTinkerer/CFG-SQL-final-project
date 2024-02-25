@@ -196,36 +196,16 @@ VALUES (11, 1, '2024-04-01', '2024-04-05', 1);
 
 SELECT * FROM Rooms_booked WHERE room_booked_ID = 11;
 
+DELETE FROM Rooms_booked WHERE room_booked_ID = 11; 
 DROP TRIGGER update_nights; 
 
--- TASK 6: In your DB create an event and demonstrate how it runs. 
--- In this example, the event HourlyRoomBookingUpdate is scheduled to run every hour, 
--- starting from the current timestamp. The task it performs is an update operation on 
--- the Rooms_booked table, setting the nights column to the difference 
--- in days between check_out and check_in.
-
-SET GLOBAL event_scheduler = ON;
-
-CREATE EVENT HourlyRoomBookingUpdate
-ON SCHEDULE EVERY 1 HOUR
-STARTS CURRENT_TIMESTAMP
-DO
-  UPDATE Rooms_booked
-  SET nights = DATEDIFF(check_out, check_in);
-  
-  SELECT * FROM Rooms_booked WHERE nights = 'HourlyRoomBookingUpdate';
-  DROP EVENT HourlyRoomBookingUpdate; 
-  
-  SHOW EVENTS WHERE Db = 'Summer_house_rental' AND Name = 'HourlyRoomBookingUpdate';
-  
-  -- TASK 7: create a view that uses at least 3-4 base tables; 
+  -- TASK 6: create a view that uses at least 3-4 base tables; 
   -- prepare and demonstate a query that uses the view to produce a logically arranged result set for analysis
   
-  CREATE VIEW SummerHouseRentalsView AS
-SELECT
-    c.FirstName AS CustomerFirstName,
-    c.LastName AS CustomerLastName,
-    r.room_type AS RoomType,
+  CREATE VIEW customer_bookings AS
+    SELECT 
+	Full_Name(FirstName, LastName) AS Full_Name,
+	r.room_type AS RoomType,
     rb.check_in AS CheckInDate,
     rb.check_out AS CheckOutDate,
     rb.nights AS NightsBooked,
@@ -237,22 +217,22 @@ JOIN
 JOIN
     Rooms r ON rb.room_ID = r.room_ID;
     
-  --  retrieve all booked rooms along with customer names
+SELECT * FROM customer_bookings; 
+
+--  retrieve all booked rooms along with customer names
 SELECT 
-CustomerFirstName, 
-CustomerLastName, 
+Full_Name,  
 RoomType, 
 CheckInDate, 
 CheckOutDate
-FROM SummerHouseRentalsView;
+FROM customer_bookings;
 
 -- find the total cost for each booking:
 SELECT 
-CustomerFirstName, 
-CustomerLastName, 
+Full_Name, 
 RoomType, 
 NightsBooked * RoomRate AS TotalCost
-FROM SummerHouseRentalsView;
+FROM customer_bookings;
 
   -- TASK 8: prepare an example query with group by and having to demonstrate how to extract data for analysis
   -- EXAMPLE: query written calculates the total revenue for each room type where the total revenue exceeds £1000. 
